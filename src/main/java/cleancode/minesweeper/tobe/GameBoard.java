@@ -1,5 +1,9 @@
 package cleancode.minesweeper.tobe;
 
+import cleancode.minesweeper.tobe.cell.Cell;
+import cleancode.minesweeper.tobe.cell.EmptyCell;
+import cleancode.minesweeper.tobe.cell.LandMineCell;
+import cleancode.minesweeper.tobe.cell.NumberCell;
 import cleancode.minesweeper.tobe.gamelevel.GameLevel;
 
 import java.util.Arrays;
@@ -14,20 +18,24 @@ public class GameBoard {
         this.landMineCount = gameLevel.getLandMineCount();
     }
 
+    private Cell findCell(int row, int col) {
+        return board[row][col];
+    }
+
     public void initializeGame() {
         int rowSize = getRowSize();
         int colSize = getColSize();
 
         for (int row = 0; row < rowSize; row++) {
             for (int col = 0; col < colSize; col++) {
-                board[row][col] = Cell.create();
+                board[row][col] = new EmptyCell();
             }
         }
 
         for (int i = 0; i < landMineCount; i++) {
             int landMineRow = new Random().nextInt(rowSize);
             int landMineCol = new Random().nextInt(colSize);
-            findCell(landMineRow, landMineCol).turnOnLandMine();
+            board[landMineRow][landMineCol] = new LandMineCell();
         }
 
         for (int row = 0; row < rowSize; row++) {
@@ -35,9 +43,13 @@ public class GameBoard {
                 if (isLandMineCell(row, col)) {
                     continue;
                 }
-
                 int count = countNearByLandMines(row, col);
-                findCell(row, col).updateNearbyLandMineCount(count);
+
+                if (count == 0) {
+                    continue;
+                }
+
+                board[row][col] = new NumberCell(count);
             }
         }
     }
@@ -104,12 +116,8 @@ public class GameBoard {
         return findCell(rowIndex, colIndex).hasLandMineCount();
     }
 
-    private  boolean isOpenedCell(int rowIndex, int colIndex) {
+    private boolean isOpenedCell(int rowIndex, int colIndex) {
         return findCell(rowIndex, colIndex).isOpened();
-    }
-
-    private Cell findCell(int row, int col) {
-        return board[row][col];
     }
 
     private int countNearByLandMines(int row, int col) {
