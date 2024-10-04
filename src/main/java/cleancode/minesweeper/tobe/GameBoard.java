@@ -67,10 +67,6 @@ public class GameBoard {
         return board[0].length;
     }
 
-    public String getSign(CellPosition cellPosition) {
-        return findCell(cellPosition).getSign();
-    }
-
     public void flagAt(CellPosition cellPosition) {
         findCell(cellPosition).flag();
     }
@@ -136,5 +132,10 @@ public class GameBoard {
             .filter(position -> position.isRowIndexLessThan(getRowSize()))
             .filter(position -> position.isColIndexLessThan(getColSize()))
             .toList();
+    }
+
+    public CellSnapshot getSnapshot(CellPosition cellPosition) {
+        Cell cell = findCell(cellPosition);
+        return cell.getSnapshot();
     }
 }
